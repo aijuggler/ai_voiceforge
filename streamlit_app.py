@@ -12,6 +12,13 @@ import json
 import os
 from dotenv import load_dotenv, find_dotenv
 
+from azure.cognitiveservices.speech import (
+    AudioDataStream,
+    SpeechConfig,
+    SpeechSynthesizer,
+    SpeechSynthesisOutputFormat,
+)
+import azure.cognitiveservices.speech as speechsdk
 from services import logger, measure_time
 from podcast_creator import (
     extract_text_from_pdf,
@@ -20,12 +27,17 @@ from podcast_creator import (
     generate_podcast_plan,
     podacast_segment_generator,
 )
-
-from audio_generation import generate_ssml_script, convert_ssml_to_audio
+from audio_generation import generate_ssml_script, convert_to_audiov2
 
 
 # Load environment variables from the .env file
 load_dotenv("cred.env")
+
+# Audio Config
+os.environ["PATH"] += os.pathsep + "/opt/homebrew/bin"
+from pydub import AudioSegment
+AudioSegment.converter = "/opt/homebrew/bin/ffmpeg"
+AudioSegment.ffprobe = "/opt/homebrew/bin/ffprobe"
 
 # Retrieve Azure OpenAI specific configuration from environment variables
 OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
@@ -42,13 +54,25 @@ llm = AzureChatOpenAI(
     temperature=0.6,
 )
 
+speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
+speech_config.set_speech_synthesis_output_format(
+                speechsdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3)
+
 st.set_page_config(layout="wide", page_title="Podcast App")
 
-# Define the folder path for audio
-folder_path = "audio_files"
-# Create the folder if it does not exist
-if not os.path.exists(folder_path):
-    os.makedirs(folder_path)
+
+# Audio file saving in its folder.
+def create_folder_if_not_exists(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"✅ Folder created: {folder_path}")
+    else:
+        print(f"📁 Folder already exists: {folder_path}")
+    return folder_path
+
+# Example usage:
+output_path = create_folder_if_not_exists("saved_audio")
+# audio_file_path = os.path.join(output_path, "final_audio.mp3")
 
 def main():
     st.title("Podcast Generator")
@@ -209,13 +233,12 @@ def main():
         with st.spinner("Generating audio file..."):
             safe_title = st.session_state["podcast_safe_title"]
             audio_filename = f"{safe_title}.mp3"
-            audio_full_path = os.path.join(folder_path, audio_filename)
+            audio_full_path = os.path.join(output_path, audio_filename)
 
-            convert_ssml_to_audio(
-                ssml_content=ssml_script,
-                azure_speech_key=AZURE_SPEECH_KEY,
-                azure_spech_region=AZURE_SPEECH_REGION,
-                output_audio_file=audio_full_path
+            convert_to_audiov2(
+                speech_config=speech_config,
+                ssml_output_form=ssml_script,
+                file_path=audio_full_path
             )
 
         st.success("Audio generated successfully!")
