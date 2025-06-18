@@ -2,31 +2,70 @@
 
 ### 🚀 Tagline:
 
-**"AI-Powered Podcast Creation from Any Document or URL using LLMs and Azure TTS"**
+**"Agentic AI-Powered Podcast Creation from Any Document or URL using LLMs and Azure TTS"**
 
 ---
 
 ### 🧾 Overview
 
-This project is a **Generative AI-based Podcast Generator** that takes in any **PDF document or web URL**, extracts the content, and transforms it into a **human-like podcast script** using **Azure OpenAI LLMs**. It then formats the script using SSML and finally converts it into high-quality **AI-narrated audio using Azure Text-to-Speech (TTS)**.
+This project is a **Generative AI-based Podcast Generator** that takes in any **PDF document or web URL**, extracts the content, and transforms it into a **multi-speaker podcast script** using a modular **agentic workflow** powered by **Azure OpenAI LLMs**. It then formats the script using SSML and finally converts it into high-quality **AI-narrated audio using Azure Text-to-Speech (TTS)**.
 
-The app supports multiple speakers, realistic conversation formatting, and allows generation of podcasts with a few clicks via a **Streamlit UI** or **FastAPI backend**.
+The app utilizes multiple **specialized agents**—each responsible for a specific sub-task in the pipeline, such as document parsing, title generation, podcast planning, dialogue scripting, SSML formatting, and audio synthesis. The entire pipeline is accessible via a **Streamlit UI** or a **FastAPI backend**.
+
+---
+
+### 🤖 Agentic Workflow
+
+The system is built around **functional AI agents**, each encapsulated into its own function or module, enabling modularity, error isolation, and easier future expansion:
+
+1. **Text Extraction Agent**
+
+   * `extract_text_from_pdf` / `extract_text_from_url`
+   * Converts document/URL into raw text
+
+2. **Title Generator Agent**
+
+   * `title_generator`
+   * Generates an engaging podcast title using LLM
+
+3. **Podcast Planner Agent**
+
+   * `generate_podcast_plan`
+   * Summarizes key ideas based on desired podcast length and speaker count
+
+4. **Script Writer Agent**
+
+   * `podacast_segment_generator`
+   * Produces multi-speaker conversational script using the ideas and extracted content
+
+5. **SSML Formatter Agent**
+
+   * `generate_ssml_script`
+   * Transforms the script into SSML format with tone, pitch, and pauses
+
+6. **Audio Generator Agent**
+
+   * `convert_to_audiov2`
+   * Uses Azure TTS to synthesize final podcast audio from SSML
+
+Each agent is invoked in sequence to simulate an **autonomous multi-agent pipeline**, orchestrated through modular scripts (`app.py`, `streamlit_app.py`, and `main_api.py`).
 
 ---
 
 ### 🔧 Key Features
 
-* 📄 Accepts both **PDF files** and **URLs** as content sources.
+* 📄 Accepts both **PDF files** and **URLs** as content sources
 * 🧠 Uses **Azure OpenAI LLM (GPT-4o-mini)** to:
 
   * Generate podcast title
   * Plan key discussion points
   * Generate full speaker dialogues
-* 🗣️ Converts dialogues into **SSML format** for realistic tone, pauses, and voice inflections.
-* 🔊 Uses **Azure Cognitive Services TTS** to generate multi-speaker podcast audio.
-* 🎛️ Clean and user-friendly **Streamlit frontend**.
+* 🤖 Built on a **multi-agent workflow** for modular, extensible design
+* 🗣️ Converts dialogues into **SSML format** for naturalistic speech
+* 🔊 Uses **Azure Cognitive Services TTS** to generate multi-speaker podcast audio
+* 🎛️ Clean and user-friendly **Streamlit frontend**
 * 🌐 Synchronous **FastAPI backend** with endpoint: `/generate_podcast`
-* 💾 Automatically saves podcast script, SSML, and audio.
+* 💾 Automatically saves podcast script, SSML, and audio
 
 ---
 
@@ -46,22 +85,16 @@ The app supports multiple speakers, realistic conversation formatting, and allow
 
 ---
 
-### 🔄 Project Workflow
+### 🔄 Full Pipeline
 
-1. **Input Selection**: User uploads a PDF or enters a URL.
-2. **Text Extraction**: Content extracted via PyPDF2 or BeautifulSoup.
-3. **LLM Script Generation**:
-
-   * Title generation
-   * Key ideas summarization
-   * Multi-speaker podcast script creation
-4. **SSML Conversion**: Script is converted to SSML with speaker-specific styles.
-5. **Audio Synthesis**: Azure TTS generates MP3 podcast.
-6. **Output Saved**:
-
-   * `.mp3` file
-   * `.xml` SSML file
-   * `.txt` podcast script
+1. **User Input**: Upload PDF or enter a URL
+2. **Text Extraction Agent**: Extract raw text content
+3. **Title Generator Agent**: Generate a creative episode title
+4. **Podcast Planner Agent**: Derive discussion themes and flow
+5. **Script Writer Agent**: Generate multi-speaker dialogue
+6. **SSML Formatter Agent**: Format with voice modulation tags
+7. **Audio Generator Agent**: Synthesize final audio via Azure TTS
+8. **Output Storage**: Save `.mp3`, `.xml`, and `.txt`
 
 ---
 
@@ -112,28 +145,12 @@ uvicorn main_api:app --reload
 
 ---
 
-### 📂 Folder Structure (Simplified)
-
-```
-ai_voiceforge/
-├── app.py                    # Podcast script generation logic
-├── main_api.py              # REST API endpoint
-├── streamlit_app.py         # Web frontend
-├── audio_generation.py      # SSML + Audio synthesis logic
-├── podcast_creator.py       # LLM-based content generation
-├── saved_audio/             # Output MP3s
-├── document_store/          # Sample inputs
-├── saved_podcast_data/      # Generated SSML/XML/Text
-├── cred.env                 # Azure credentials (not committed)
-```
-
----
-
 ### 🔮 Future Enhancements
 
 * 🎞️ Add avatar-based video generation
 * 🗣️ Custom voice cloning support
 * 🌍 Multi-language podcasting
+* 🧠 Reinforcement-based agent selection
 * 📤 Cloud-based hosting (e.g., Azure App Service or Streamlit Cloud)
 
 ---
@@ -145,10 +162,3 @@ ai_voiceforge/
 
 ---
 
-### 📄 License
-
-MIT License
-
----
-
-This README was auto-generated based on full code analysis of the `ai_voiceforge` project. All descriptions match the implementation logic and architecture found in the uploaded repository.
