@@ -19,15 +19,15 @@ def generate_ssml_script(podcast_conversation_script, speaker_details, llm):
     """
     title_to_voice_model = {
         "Ava Smith": "en-US-Ava:DragonHDLatestNeural",
-        "Brian Stark": "en-US-BrianMultilingualNeural",
-        "Peter Johnson": "en-US-AlloyTurboMultilingualNeural",
+        "Brian Stark": "en-US-Brian:DragonHDLatestNeural",
+        "Steffan Johnson": "en-US-Steffan:DragonHDLatestNeural",
         "Adam Brown": "en-US-AdamMultilingualNeural",
         "Andrew White": "en-US-Andrew:DragonHDLatestNeural",
         "Amanda Turner": "en-US-AmandaMultilingualNeural",
         "Emma Clark": "en-US-Emma:DragonHDLatestNeural",
         "Nancy Roberts": "en-US-NancyMultilingualNeural",
         "Natasha Cook": "en-US-SerenaMultilingualNeural",
-        "Ryan Davis": "en-US-SteffanMultilingualNeural",
+        "Davis Hall": "en-US-Davis:DragonHDLatestNeural",
         "Dustin": "en-US-DustinMultilingualNeural"
     }
 
@@ -64,6 +64,13 @@ Speaker details(provided as nested dictionary) : {nested_speakers}
     - `style="cheerful"` for enthusiastic or introductory parts.
     - `style="calm"` for neutral explanations.
     - `style="thoughtful"` for deeper analytical discussions.
+    - Carefully detect genuinely funny, light-hearted, or informal moments (e.g., stories about pets, funny personal anecdotes).
+    - ONLY in those moments, apply:
+        - <mstts:express-as style="cheerful"> or style="excited"
+        - Simulate giggle or laughter tone using pacing and prosody (e.g., <prosody pitch="+10%" rate="fast">).
+        - Insert <break time="200ms"/> where laughter or surprise would naturally occur.
+    - Do NOT simulate laughter or cheerful tone for merely upbeat or energetic lines unless the **content is clearly funny or casual**.
+    - Avoid literal words like “Haha” unless already part of the speaker's actual script.
 - Please Always include styles and breaks wherever applicable to make the podcast sound as natural as possible.
 
 
@@ -96,9 +103,13 @@ Speaker details(provided as nested dictionary) : {nested_speakers}
 - DO NOT modify the content or meaning of the script. Your role is only to enhance the delivery using SSML.                    
 - Ensure the final SSML is valid, well-structured, and ready to be processed by a Text-to-Speech engine.
 
-5. Guidelines:-
-- Do not truncate or shorten the SSML under any circumstances, even if you have already provided a partial response. Provide the full SSML exactly as required in one response.
+5. Completion Guarantee:-
+- Do not truncate or shorten the SSML under any circumstances, even if you have already provided a partial response. It must contain the entire podcast conversation, including **Closing Thoughts and Outro**.
 - Your response must contain the complete conversation.
+- If needed, optimize formatting to fit long text without cutting. Split long paragraphs but don’t drop segments.
+- NEVER treat earlier parts as final output. Wait till **all segments are processed**, including the last one.
+
+6. Speaker Identification:
 - Only Include the Speaker dialogues in the SSML script. Donot use Segment sections names like Structured Discussion, Deep Dive etc in the ssml.
 - Do not rewrite the content. For each line, detect the speaker from the text before the colon. Use the dictionary to select the correct voice. Output each line in <voice name="...">...</voice>.
                     
@@ -129,6 +140,3 @@ Response:
     ssml_json = json.loads(ssml_output)
     xml_script = ssml_json["ssml_script"]
     return xml_script
-
-
-

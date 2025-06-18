@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pydub
+azure-cognitiveservices-speech
+langchain
+langchain-openai
+openai
+bs4
+PyPDF2
+requests
+regex
+numpy
+pandas
