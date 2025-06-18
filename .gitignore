@@ -172,3 +172,4 @@ cython_debug/
 others
 notes.txt
 audio_files
+cred.env

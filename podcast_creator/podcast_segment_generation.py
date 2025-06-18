@@ -196,7 +196,7 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
             "deep_dive": "4-6 exchanges",
             "interactive_discussions": "4-6 exchanges",
             "highlights_key_takeaways": "3-4 exchanges",
-            "question_rounds": "2-3 exchanges",
+            "question_rounds": "2-4 exchanges",
             "closing_thoughts_and_outro": "3-4 exchanges"
         }
 
@@ -206,13 +206,13 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
         )
         external_knowledge_length = "800-1000 words"
         podcast_structure = {
-            "introduction": "3-5 exchanges",
+            "introduction": "3-10 exchanges",
             "structured_discussion": "8-10 exchanges",
             "deep_dive": "10-15 exchanges",
             "interactive_discussions": "10-15 exchanges",
             "highlights_key_takeaways": "8-10 exchanges",
             "question_rounds": "5-7 exchanges",
-            "closing_thoughts_and_outro": "3-4 exchanges"
+            "closing_thoughts_and_outro": "4-6 exchanges"
         }
 
     elif podcast_length == "long":
@@ -221,13 +221,13 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
         )
         external_knowledge_length = "2000-3000 words"
         podcast_structure = {
-            "introduction": "3-5 exchanges",
+            "introduction": "3-10 exchanges",
             "structured_discussion": "15-20 exchanges",
             "deep_dive": "15-20 exchanges",
             "interactive_discussions": "15-20 exchanges",
             "highlights_key_takeaways": "15-20 exchanges",
             "question_rounds": "7-10 exchanges",
-            "closing_thoughts_and_outro": "3-4 exchanges"
+            "closing_thoughts_and_outro": "3-6 exchanges"
         }
 
     else:
