@@ -178,3 +178,6 @@ saved_podcast_data
 backend/generated_podcasts
 .DS
 frontend/node_modules
+.DS_Store
+.DS_Store
+.DS_Store
