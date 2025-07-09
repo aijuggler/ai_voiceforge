@@ -1,5 +1,62 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// --- THEME CONFIGURATION (REFINED) ---
+const THEMES = {
+  neon: {
+    id: 'neon',
+    name: 'Neon Wave',
+    backgroundImage: '/bd4.webp',
+    colors: {
+      primary: 'fuchsia',
+      secondary: 'cyan',
+      text: 'text-white',
+      textMuted: 'text-gray-300',
+      dialogue1: 'text-fuchsia-400',
+      dialogue2: 'text-cyan-400',
+    }
+  },
+  golden: {
+    id: 'golden',
+    name: 'Golden Hour',
+    backgroundImage: '/bd2.webp',
+    colors: {
+      primary: 'amber',
+      secondary: 'sky',
+      text: 'text-white',
+      textMuted: 'text-gray-300',
+      dialogue1: 'text-amber-300',
+      dialogue2: 'text-sky-300',
+    }
+  },
+  pastel: {
+    id: 'pastel',
+    name: 'Pastel Dreams',
+    backgroundImage: '/bd3.webp',
+    colors: {
+      primary: 'violet',
+      secondary: 'emerald',
+      text: 'text-white',
+      textMuted: 'text-gray-300',
+      dialogue1: 'text-violet-400',
+      dialogue2: 'text-emerald-400',
+    }
+  },
+  bubblegum: {
+    id: 'bubblegum',
+    name: 'Bubblegum',
+    backgroundImage: '/bd1.webp',
+    colors: {
+      primary: 'rose',
+      secondary: 'sky',
+      text: 'text-white',
+      textMuted: 'text-gray-300',
+      dialogue1: 'text-rose-400',
+      dialogue2: 'text-sky-400',
+    }
+  }
+};
+
+
 // --- Helper Components & Data ---
 
 // A simple heuristic to guess gender from first name for avatar selection
@@ -12,7 +69,8 @@ const getGender = (name) => {
 // SVG Icons
 const ICONS = {
   appLogo: "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M5 18a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1",
-  upload: "M9.99988 15.1709L19.1923 5.97852L20.6065 7.39273L9.99988 17.9993L3.63588 11.6354L5.04988 10.2212L9.99988 15.1709Z",
+  url: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72",
+  pdf: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM6 22V4h7v5h5v13H6z",
   podcast: "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3ZM19 10v2a7 7 0 0 1-14 0v-2M12 19v3",
   restart: "M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z",
   plus: "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
@@ -20,7 +78,7 @@ const ICONS = {
   close: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
   male: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
   female: "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z",
-  arrowLeft: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+  arrowLeft: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z",
 };
 
 const Icon = ({ path, className = "w-6 h-6", isAppLogo = false }) => (
@@ -43,30 +101,29 @@ const ALL_SPEAKERS = [
 ].map(name => ({ name, gender: getGender(name) }));
 
 // --- Animated Background Component ---
-const AnimatedBackground = () => (
+const AnimatedBackground = ({ theme }) => (
     <>
         <style>{`
-            @keyframes animate-gradient {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
-            .gradient-bg {
-                background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a2a6c, #b21f1f, #fdbb2d);
-                background-size: 400% 400%;
-                animation: animate-gradient 25s ease infinite;
-            }
-            @keyframes fade-in-up {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .fade-in-up {
-                animation: fade-in-up 0.6s ease-out forwards;
-            }
+            @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+            .fade-in { animation: fade-in 0.8s ease-out forwards; }
+            @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+            .fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
         `}</style>
-        <div className="absolute top-0 left-0 w-full h-full gradient-bg z-0"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-black/30 z-0"></div>
+        <div 
+            className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0 transition-all duration-700"
+            style={{ backgroundImage: `url(${theme.backgroundImage})` }}
+        ></div>
+        {/* Diffused Overlay - Increased opacity for better contrast */}
+        <div className="absolute top-0 left-0 w-full h-full bg-black/70 z-0"></div>
     </>
+);
+
+const ProgressDots = ({ total, current }) => (
+    <div className="flex justify-center gap-3">
+        {Array.from({ length: total }).map((_, i) => (
+            <div key={i} className={`w-3 h-3 rounded-full transition-all duration-300 ${i + 1 === current ? 'bg-white scale-125' : 'bg-white/30'}`}></div>
+        ))}
+    </div>
 );
 
 
@@ -75,94 +132,136 @@ const AnimatedBackground = () => (
 const HomePage = ({
   loading, error, handleSubmit, inputType, setInputType, sourceUrl, setSourceUrl,
   fileData, handleFileChange, speakers, removeSpeaker, setIsSpeakerModalOpen,
-  podcastLength, setPodcastLength
+  podcastLength, setPodcastLength, theme
 }) => {
-    const SpeakerTag = ({ speaker, onRemove }) => (
-    <div className="flex items-center gap-2 bg-gray-700/50 rounded-full p-1 pr-2 text-white transition-all hover:bg-gray-600/50 hover:shadow-lg hover:shadow-fuchsia-500/20">
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${speaker.gender === 'male' ? 'bg-teal-500/70' : 'bg-fuchsia-500/70'}`}>
-        <Icon path={ICONS[speaker.gender]} className="w-5 h-5" />
-      </div>
-      <span className="font-medium text-sm">{speaker.name}</span>
-      <button type="button" onClick={() => onRemove(speaker.name)} className="text-gray-400 hover:text-white">
-        <Icon path={ICONS.close} className="w-4 h-4" />
-      </button>
-    </div>
-  );
+    const [step, setStep] = useState(1);
+    const nextStep = () => setStep(s => s + 1);
+    const prevStep = () => setStep(s => s - 1);
 
-  return (
-    <div className="w-full max-w-2xl mx-auto fade-in-up">
-      <div className="bg-gray-900/50 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-black/30 border border-gray-700">
-        <h1 className="text-4xl md:text-5xl font-bold text-white text-center bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-fuchsia-400">
-          AI Podcast Studio
-        </h1>
-        <p className="text-gray-300 mt-2 text-center text-lg">
-          Transform articles and documents into engaging podcasts.
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="grid grid-cols-2 gap-2 bg-gray-800/80 p-1 rounded-xl">
-            <button type="button" onClick={() => setInputType('url')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${inputType === 'url' ? 'bg-teal-500/80 text-white shadow-lg shadow-teal-500/30' : 'text-gray-300 hover:bg-gray-700/50'}`}>From URL</button>
-            <button type="button" onClick={() => setInputType('pdf')} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${inputType === 'pdf' ? 'bg-fuchsia-500/80 text-white shadow-lg shadow-fuchsia-500/30' : 'text-gray-300 hover:bg-gray-700/50'}`}>From PDF</button>
-          </div>
-
-          <div>
-            {inputType === 'url' ? (
-              <input type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://example.com/article" className="w-full bg-gray-800/80 text-white placeholder-gray-400 p-4 rounded-xl border-2 border-gray-700 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition-all"/>
-            ) : (
-              <label className="w-full flex items-center justify-center bg-gray-800/80 text-gray-300 p-4 rounded-xl border-2 border-dashed border-gray-600 cursor-pointer hover:bg-gray-700/50 hover:border-fuchsia-400 transition-all">
-                <Icon path={ICONS.upload} className="w-6 h-6 mr-3 text-fuchsia-400" />
-                <span>{fileData.name || 'Click to upload a PDF file'}</span>
-                <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
-              </label>
-            )}
-          </div>
-          
-          <div className="bg-gray-800/80 p-4 rounded-xl border-2 border-gray-700">
-             <label className="text-gray-300 font-semibold mb-3 block">Podcast Speakers</label>
-             <div className="flex flex-wrap items-center gap-2">
-                {speakers.map(speaker => (
-                    <SpeakerTag key={speaker.name} speaker={speaker} onRemove={removeSpeaker} />
-                ))}
-                {speakers.length < 5 && (
-                    <button type="button" onClick={() => setIsSpeakerModalOpen(true)} className="w-10 h-10 flex items-center justify-center bg-gray-700/80 rounded-full text-teal-300 hover:bg-teal-500/50 hover:text-white transition-all transform hover:scale-110">
-                        <Icon path={ICONS.plus} className="w-6 h-6" />
+    const renderStep = () => {
+        const stepContentKey = `step-${step}`;
+        const primaryColor = theme.colors.primary;
+        const secondaryColor = theme.colors.secondary;
+        const baseBg = 'bg-white/5';
+        const hoverBg = 'bg-white/10';
+        
+        switch(step) {
+            case 1: return (
+                <div key={stepContentKey} className="text-center fade-in-up">
+                    <h2 className={`text-3xl md:text-4xl font-bold ${theme.colors.text} mb-8`}>How do you want to start?</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <button type="button" onClick={() => { setInputType('url'); nextStep(); }} className={`p-8 ${baseBg} border-2 border-transparent rounded-2xl text-left hover:border-${primaryColor}-400 hover:${hoverBg} transition-all group`}>
+                            <Icon path={ICONS.url} className={`w-12 h-12 text-${primaryColor}-500 mb-4`} />
+                            <h3 className={`text-2xl font-bold ${theme.colors.text}`}>From a URL</h3>
+                            <p className={`${theme.colors.textMuted} mt-2`}>Paste a link to any online article.</p>
+                        </button>
+                        <button type="button" onClick={() => { setInputType('pdf'); nextStep(); }} className={`p-8 ${baseBg} border-2 border-transparent rounded-2xl text-left hover:border-${secondaryColor}-400 hover:${hoverBg} transition-all group`}>
+                            <Icon path={ICONS.pdf} className={`w-12 h-12 text-${secondaryColor}-500 mb-4`} />
+                            <h3 className={`text-2xl font-bold ${theme.colors.text}`}>From a PDF</h3>
+                            <p className={`${theme.colors.textMuted} mt-2`}>Upload a document from your device.</p>
+                        </button>
+                    </div>
+                </div>
+            );
+            case 2: return (
+                <div key={stepContentKey} className="text-center fade-in-up">
+                    <h2 className={`text-3xl md:text-4xl font-bold ${theme.colors.text} mb-8`}>
+                        {inputType === 'url' ? 'Paste the article URL' : 'Upload your PDF'}
+                    </h2>
+                    {inputType === 'url' ? (
+                        <input type="url" value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="https://..." className={`w-full max-w-xl mx-auto ${baseBg} ${theme.colors.text} text-center text-lg placeholder-gray-400 p-4 rounded-xl border-2 border-gray-700 focus:border-${primaryColor}-400 focus:ring-1 focus:ring-${primaryColor}-400 transition-all`}/>
+                    ) : (
+                        <label className={`w-full max-w-xl mx-auto flex flex-col items-center justify-center ${baseBg} ${theme.colors.textMuted} p-12 rounded-xl border-2 border-dashed border-gray-600 cursor-pointer hover:${hoverBg} hover:border-${secondaryColor}-400 transition-all`}>
+                            <Icon path={ICONS.pdf} className={`w-16 h-16 mb-4 text-${secondaryColor}-500`} />
+                            <span className={`font-semibold ${theme.colors.text}`}>{fileData.name || 'Click or drag to upload'}</span>
+                            <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                        </label>
+                    )}
+                </div>
+            );
+            case 3:
+                const SpeakerTag = ({ speaker, onRemove }) => (
+                    <div className="flex items-center gap-2 bg-black/20 rounded-full p-1 pr-3 text-white transition-all hover:bg-black/40">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${speaker.gender === 'male' ? `bg-${secondaryColor}-500/70` : `bg-${primaryColor}-500/70`}`}>
+                            <Icon path={ICONS[speaker.gender]} className="w-6 h-6" />
+                        </div>
+                        <span className="font-bold">{speaker.name}</span>
+                        <button type="button" onClick={() => onRemove(speaker.name)} className="ml-2 text-gray-400 hover:text-white">
+                            <Icon path={ICONS.close} className="w-5 h-5" />
+                        </button>
+                    </div>
+                );
+                return (
+                    <div key={stepContentKey} className="text-center fade-in-up">
+                        <h2 className={`text-3xl md:text-4xl font-bold ${theme.colors.text} mb-8`}>Assemble your cast</h2>
+                        <div className="flex flex-wrap items-center justify-center gap-4 max-w-2xl mx-auto">
+                            {speakers.map(speaker => <SpeakerTag key={speaker.name} speaker={speaker} onRemove={removeSpeaker} />)}
+                            {speakers.length < 5 && (
+                                <button type="button" onClick={() => setIsSpeakerModalOpen(true)} className="w-12 h-12 flex items-center justify-center bg-white/10 rounded-full text-white hover:bg-white/20 transition-all transform hover:scale-110">
+                                    <Icon path={ICONS.plus} className="w-8 h-8" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            case 4: return (
+                <div key={stepContentKey} className="text-center fade-in-up">
+                    <h2 className={`text-3xl md:text-4xl font-bold ${theme.colors.text} mb-8`}>And finally, the length...</h2>
+                    <div className="flex justify-center gap-4 mb-12">
+                        {['short', 'moderate', 'long'].map(len => (
+                            <button key={len} type="button" onClick={() => setPodcastLength(len)} className={`px-8 py-4 text-lg font-bold rounded-xl transition-all duration-300 capitalize border-2 ${podcastLength === len ? `bg-white/20 border-white/50 ${theme.colors.text}` : `bg-white/5 border-transparent ${theme.colors.textMuted} hover:bg-white/10`}`}>{len}</button>
+                        ))}
+                    </div>
+                    <button type="button" onClick={handleSubmit} className={`w-full max-w-xs mx-auto flex items-center justify-center gap-3 bg-gradient-to-r from-${secondaryColor}-500 to-${primaryColor}-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-black/20 hover:from-${secondaryColor}-600 hover:to-${primaryColor}-700 transition-all duration-300 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transform hover:scale-105`} disabled={loading}>
+                        <Icon path={ICONS.podcast} className="w-6 h-6" />
+                        <span>{loading ? "Generating..." : "Generate Podcast"}</span>
                     </button>
-                )}
-             </div>
-          </div>
+                </div>
+            );
+            default: return null;
+        }
+    };
 
-          <div className="flex items-center justify-between bg-gray-800/80 p-2 rounded-xl border-2 border-gray-700">
-            <label className="text-gray-300 font-semibold pl-2">Podcast Length</label>
-            <div className="flex items-center gap-1 bg-gray-900/50 p-1 rounded-lg">
-                {['short', 'moderate', 'long'].map(len => (
-                    <button key={len} type="button" onClick={() => setPodcastLength(len)} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-all duration-300 capitalize ${podcastLength === len ? 'bg-teal-500/80 text-white shadow-md shadow-teal-500/20' : 'text-gray-300 hover:bg-gray-700/50'}`}>{len}</button>
-                ))}
+    const isNextDisabled = () => {
+        if (step === 2) {
+            if (inputType === 'url' && !sourceUrl) return true;
+            if (inputType === 'pdf' && !fileData.content) return true;
+        }
+        return false;
+    };
+
+    return (
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
+            <div className="w-full min-h-[400px] flex items-center justify-center">
+                {renderStep()}
             </div>
-          </div>
-
-          <button type="submit" className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-teal-500 to-fuchsia-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-black/20 hover:from-teal-600 hover:to-fuchsia-700 transition-all duration-300 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transform hover:scale-105" disabled={loading}>
-            <Icon path={ICONS.podcast} className="w-6 h-6" />
-            <span>{loading ? "Generating Your Podcast..." : "Generate Podcast"}</span>
-          </button>
-        </form>
-      </div>
-      {loading && (
-        <div className="mt-8 text-center fade-in-up">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400"></div>
-          <p className="mt-4 text-gray-300">Brewing your podcast... this may take a moment.</p>
+            
+            <div className="mt-12 w-full flex items-center justify-between">
+                <button type="button" onClick={prevStep} disabled={step === 1} className="px-6 py-2 text-white/50 hover:text-white disabled:opacity-0 transition-all">Back</button>
+                <ProgressDots total={4} current={step} />
+                {step < 4 ? (
+                    <button type="button" onClick={nextStep} disabled={isNextDisabled()} className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all">Next</button>
+                ) : (
+                    <div className="w-[76px]"></div> // Placeholder for alignment
+                )}
+            </div>
+            {loading && (
+                <div className="mt-8 text-center fade-in-up">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400"></div>
+                    <p className="mt-4 text-gray-300">Brewing your podcast... this may take a moment.</p>
+                </div>
+            )}
+            {error && (
+                <div className="mt-8 mx-auto max-w-2xl bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 fade-in-up">
+                    <Icon path={ICONS.error} className="w-8 h-8"/>
+                    <span><strong>Error:</strong> {error}</span>
+                </div>
+            )}
         </div>
-      )}
-      {error && (
-        <div className="mt-8 mx-auto max-w-2xl bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-xl flex items-center gap-3 fade-in-up">
-          <Icon path={ICONS.error} className="w-8 h-8"/>
-          <span><strong>Error:</strong> {error}</span>
-        </div>
-      )}
-    </div>
-  );
+    );
 };
 
-const ResultPage = ({ result, handleRestart }) => {
+const ResultPage = ({ result, handleRestart, theme }) => {
   const parseScript = (script) => {
     const elements = [];
     const lines = script.split('\n').filter(line => line.trim() !== '');
@@ -190,39 +289,27 @@ const ResultPage = ({ result, handleRestart }) => {
   const scriptElements = parseScript(result.podcast_script);
 
   return (
-    <div className="w-full h-full flex flex-col fade-in-up">
-      <header className="w-full p-4 flex-shrink-0 bg-gray-900/50 backdrop-blur-lg border-b border-gray-700/50">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <button onClick={handleRestart} className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
-            <Icon path={ICONS.arrowLeft} className="w-6 h-6" />
-            <span className="font-semibold">Create New Podcast</span>
-          </button>
-          <h1 className="text-lg font-bold text-center text-gray-200 truncate px-4">
-            {result.title}
-          </h1>
-        </div>
-      </header>
-
-      <main className="w-full flex-grow overflow-y-auto pb-32">
+    <div className="w-full h-full flex flex-col fade-in">
+      <main className="w-full flex-grow overflow-y-auto pt-24 pb-32">
         <div className="max-w-3xl mx-auto p-8 md:p-12 space-y-8">
           {scriptElements.map((el, index) => {
             if (el.type === 'segment') {
               return (
-                <h2 key={index} className="text-4xl md:text-5xl font-bold text-center text-white pt-8 pb-4">
+                <h2 key={index} className={`text-4xl md:text-5xl font-bold text-center ${theme.colors.text} pt-8 pb-4`}>
                   {el.text}
                 </h2>
               );
             }
             if (el.type === 'dialogue') {
               const speakerInfo = ALL_SPEAKERS.find(s => s.name === el.speaker) || { gender: 'male' };
-              const speakerColor = speakerInfo.gender === 'male' ? 'text-teal-300' : 'text-fuchsia-300';
+              const speakerColor = speakerInfo.gender === 'male' ? theme.colors.dialogue2 : theme.colors.dialogue1;
               return (
                 <div key={index} className="grid grid-cols-1 md:grid-cols-[150px_1fr] gap-x-6 gap-y-2">
-                  <div className={`flex items-center gap-2 justify-end md:border-r border-gray-700 pr-6 ${speakerColor}`}>
+                  <div className={`flex items-center gap-2 justify-end md:border-r ${theme.colors.text === 'text-white' ? 'border-white/20' : 'border-slate-300'} pr-6 ${speakerColor}`}>
                     <span className="font-bold text-right">{el.speaker}</span>
                     <Icon path={ICONS[speakerInfo.gender]} className="w-5 h-5" />
                   </div>
-                  <p className="text-gray-300 text-lg leading-relaxed">{el.text}</p>
+                  <p className={`${theme.colors.textMuted} text-lg leading-relaxed`}>{el.text}</p>
                 </div>
               );
             }
@@ -231,7 +318,7 @@ const ResultPage = ({ result, handleRestart }) => {
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 right-0 p-4 bg-gray-900/50 backdrop-blur-lg border-t border-gray-700/50">
+      <footer className={`fixed bottom-0 left-0 right-0 p-4 ${theme.colors.text === 'text-white' ? 'bg-black/20' : 'bg-white/20'} backdrop-blur-lg border-t ${theme.colors.text === 'text-white' ? 'border-white/10' : 'border-black/10'}`}>
         <div className="max-w-3xl mx-auto">
           <audio controls src={`data:audio/mpeg;base64,${result.audio_data}`} className="w-full audio-player"></audio>
         </div>
@@ -244,6 +331,7 @@ const ResultPage = ({ result, handleRestart }) => {
 // --- Main App Component (Router) ---
 
 export default function App() {
+  const [activeTheme, setActiveTheme] = useState(THEMES.neon);
   const [inputType, setInputType] = useState('url');
   const [sourceUrl, setSourceUrl] = useState('');
   const [fileData, setFileData] = useState({ name: '', content: '' });
@@ -339,13 +427,13 @@ export default function App() {
     if (!isOpen) return null;
     const availableSpeakers = ALL_SPEAKERS.filter(s => !currentSpeakers.find(cs => cs.name === s.name));
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 fade-in-up" style={{animationDuration: '0.3s'}}>
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 fade-in" style={{animationDuration: '0.3s'}}>
+        <div className="bg-gray-800/80 border border-white/20 rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
           <h3 className="text-xl font-bold text-white mb-4">Select a Speaker</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto">
             {availableSpeakers.map(speaker => (
-              <button key={speaker.name} onClick={() => onSelect(speaker)} className="flex items-center gap-3 p-3 rounded-lg text-left bg-gray-700/50 hover:bg-teal-500/50 transition-all">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${speaker.gender === 'male' ? 'bg-teal-500/70' : 'bg-fuchsia-500/70'}`}>
+              <button key={speaker.name} type="button" onClick={() => onSelect(speaker)} className="flex items-center gap-3 p-3 rounded-lg text-left bg-white/5 hover:bg-teal-500/50 transition-all">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${speaker.gender === 'male' ? `bg-${activeTheme.colors.secondary}-500/70` : `bg-${activeTheme.colors.primary}-500/70`}`}>
                   <Icon path={ICONS[speaker.gender]} className="w-6 h-6 text-white" />
                 </div>
                 <span className="font-semibold text-white">{speaker.name}</span>
@@ -356,43 +444,80 @@ export default function App() {
       </div>
     );
   };
+  
+  const ThemeSwitcher = () => (
+    <div className="flex items-center gap-2 bg-black/20 p-1 rounded-full">
+        {Object.values(THEMES).map(theme => (
+            <button 
+                key={theme.id}
+                onClick={() => setActiveTheme(theme)}
+                className={`w-8 h-8 rounded-full bg-cover bg-center border-2 transition-all ${activeTheme.id === theme.id ? 'border-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                style={{backgroundImage: `url(${theme.backgroundImage})`}}
+                title={`Switch to ${theme.name} theme`}
+            ></button>
+        ))}
+    </div>
+  );
 
   return (
-    <div className="h-screen w-screen bg-black text-white font-sans flex flex-col overflow-hidden relative">
-      <AnimatedBackground />
+    <div className={`h-screen w-screen bg-black ${activeTheme.colors.text} font-sans flex flex-col overflow-hidden relative`}>
+      <AnimatedBackground theme={activeTheme} />
       
-      <header className="absolute top-0 left-0 p-4 z-20">
-        <div className="flex items-center gap-3">
-            <Icon path={ICONS.appLogo} className="w-10 h-10 text-white" isAppLogo={true} />
-            <span className="font-bold text-xl text-white">AI Podcast Studio</span>
-        </div>
-      </header>
+      {/* This header is now conditional and only shows on the result page */}
+      {result && (
+        <header className="fixed top-0 left-0 w-full p-4 z-30 bg-black/20 backdrop-blur-lg border-b border-white/10">
+            <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+              <button onClick={handleRestart} className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors flex-shrink-0">
+                <Icon path={ICONS.arrowLeft} className="w-6 h-6" />
+                <span className="font-semibold hidden sm:inline">Create New</span>
+              </button>
+              <h1 className="text-lg font-bold text-center text-gray-200 truncate min-w-0 flex-grow">
+                {result.title}
+              </h1>
+              <div className="w-24 flex-shrink-0"></div> {/* Placeholder to balance the header */}
+            </div>
+        </header>
+      )}
+
+      {/* This header is for the main page */}
+      {!result && (
+        <header className="absolute top-0 left-0 w-full p-4 z-20 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+                <Icon path={ICONS.appLogo} className="w-10 h-10 text-white" isAppLogo={true} />
+                <span className="font-bold text-xl text-white hidden sm:inline">AI Podcast Studio</span>
+            </div>
+            <ThemeSwitcher />
+        </header>
+      )}
       
-      <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+      <main className="relative z-10 w-full h-full flex items-center justify-center p-4">
         {!result ? (
-          <HomePage
-            loading={loading}
-            error={error}
-            handleSubmit={handleSubmit}
-            inputType={inputType}
-            setInputType={setInputType}
-            sourceUrl={sourceUrl}
-            setSourceUrl={setSourceUrl}
-            fileData={fileData}
-            handleFileChange={handleFileChange}
-            speakers={speakers}
-            removeSpeaker={removeSpeaker}
-            setIsSpeakerModalOpen={setIsSpeakerModalOpen}
-            podcastLength={podcastLength}
-            setPodcastLength={setPodcastLength}
-          />
+            <HomePage
+              loading={loading}
+              error={error}
+              handleSubmit={handleSubmit}
+              inputType={inputType}
+              setInputType={setInputType}
+              sourceUrl={sourceUrl}
+              setSourceUrl={setSourceUrl}
+              fileData={fileData}
+              handleFileChange={handleFileChange}
+              speakers={speakers}
+              removeSpeaker={removeSpeaker}
+              setIsSpeakerModalOpen={setIsSpeakerModalOpen}
+              podcastLength={podcastLength}
+              setPodcastLength={setPodcastLength}
+              theme={activeTheme}
+            />
         ) : (
-          <ResultPage result={result} handleRestart={handleRestart} />
+          <ResultPage result={result} handleRestart={handleRestart} theme={activeTheme} />
         )}
-      </div>
+      </main>
       
       <footer className="absolute bottom-0 right-0 p-4 z-20">
-        <p className="text-sm text-gray-400">Made with ❤️ by <a href="https://github.com/aijuggler" target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline">Ankita Tiwari</a></p>
+        <a href="https://github.com/aijuggler" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+            Made with ❤️ by Ankita Tiwari
+        </a>
       </footer>
 
       <SpeakerSelectionModal 
