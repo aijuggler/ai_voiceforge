@@ -172,4 +172,9 @@ cython_debug/
 others
 notes.txt
 audio_files
-cred.env
+.env
+saved_audio
+saved_podcast_data
+backend/generated_podcasts
+.DS
+frontend/node_modules

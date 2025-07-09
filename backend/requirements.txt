@@ -12,3 +12,4 @@ requests
 regex
 numpy
 pandas
+streamlit

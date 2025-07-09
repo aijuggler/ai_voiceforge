@@ -177,6 +177,7 @@ def generate_podcast_plan(extracted_data, number_of_speakers, Length: str, llm: 
 
 
 #____________________________________________________________________________________________________________________________
+@measure_time
 def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, number_of_speakers, podcast_length:str, speaker_names:dict, llm:AzureChatOpenAI, external_kn_call=False):
 
     # logger.debug(f"Podcast Conversation segment generation started. Total Speakers are: {number_of_speakers}")
@@ -268,6 +269,10 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
           
         1. **Introduction** 
           - Number of Exchanges: {podcast_structure["introduction"]}
+          - Make sure the host speaker : {speaker_names['speaker1']} — must warmly welcome **all** speakers in **one** exchange, explicitly announcing each speaker's name, role, or expertise.
+          - Example: Hello and welcome to Gaming Goldmine, the show where we explore the most exciting trends shaping the future of tech and innovation. I’m your host, James White, and today we’re diving into one of the fastest-growing industries in India—gaming. From mobile apps to esports arenas, the Indian gaming sector is booming, and there’s a lot to unpack. To help us break it all down, I’m joined by a brilliant guest, Andrew Smith, a seasoned market analyst who’s been tracking digital entertainment trends across Asia. Welcome, Andrew!
+          - After the host introduces them in a single exchange, each guest can provide a brief greeting or follow-up remark in their own exchange, but **should not** repeat the entire role introduction.
+
             
         2. **Structured Discussion** 
           - Number of Exchanges: {podcast_structure["structured_discussion"]}
@@ -300,8 +305,7 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
     3.  Flow, Tone, and Impact
         - Start with an engaging introduction explaining why the topic matters. 
         - Make sure the host speaker : {speaker_names['speaker1']} — must warmly welcome **all** speakers in **one** exchange, explicitly announcing each speaker's name, role, or expertise.
-        example:- Hello and welcome to Gaming Goldmine, the show where we explore the most exciting trends shaping the future of tech and innovation. I’m your host, James White, and today we’re diving into one of the fastest-growing industries in India—gaming. From mobile apps to esports arenas, the Indian gaming sector is booming, and there’s a lot to unpack.To help us break it all down, I’m joined by two brilliant guests. First up, we have Andrew Smith, a seasoned market analyst who’s been tracking digital entertainment trends across Asia. Welcome, Andrew!
-        - After the host introduces them in a single exchange, each guest can provide a brief greeting or follow-up remark in their own exchange, but **should not** repeat the entire role introduction. # <-- Added for clarity
+        example:- Hello and welcome to Gaming Goldmine, the show where we explore the most exciting trends shaping the future of tech and innovation. I’m your host, James White, and today we’re diving into one of the fastest-growing industries in India—gaming. From mobile apps to esports arenas, the Indian gaming sector is booming, and there’s a lot to unpack.To help us break it all down, I’m joined by a brilliant guest, Andrew Smith, a seasoned market analyst who’s been tracking digital entertainment trends across Asia. Welcome, Andrew!
         - Break down the main discussion into meaningful segments that reflect the key ideas.
         - Ensure that the conversation flows naturally. Include 1-2 additional lines that are impactful and provide deeper insights. When appropriate, allow for a touch of natural humor or light informal banter (such as laughter) to enhance the dialogue, but keep the overall tone professional and engaging.
         
@@ -344,8 +348,6 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
          }}
        - Do NOT include any other keys or any extra text outside of that JSON object.
 
-    Response:
-
     """
 
     # Define the segments in order for loop-based generation
@@ -368,7 +370,8 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
             prompt
             + f"\nNow, generate **only** the '{segment}' segment with exactly {podcast_structure[segment]} exchanges.\n"
             + "Return your response in **valid JSON** with exactly two keys: 'dialogues' and 'markdown'. "
-            + "No other keys. No extra text. Comply strictly."
+            + "No other keys. No extra text. Comply strictly.\n\n"
+            + "Response:\n"
         )
 
         attempts = 0

@@ -32,7 +32,7 @@ from audio_generation import generate_ssml_script, convert_to_audiov2
 
 
 # Load environment variables from the .env file
-load_dotenv("cred.env")
+load_dotenv()
 
 # Audio Config
 os.environ["PATH"] += os.pathsep + "/opt/homebrew/bin"
