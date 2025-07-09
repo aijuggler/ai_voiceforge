@@ -618,3 +618,6 @@ def podacast_segment_generator(podcast_title, podcast_keyideas, extracted_data, 
 #     # response_content = response.content.strip().strip("```json").strip("```")
 #     # parsed_response = json.loads(response_content)
 #     # return parsed_response
+
+
+
