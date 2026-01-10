@@ -1,4 +1,3 @@
-from langchain.prompts import PromptTemplate
 import xml.etree.ElementTree as ET
 import json
 

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.log
+.env
+*.ipynb
+saved_podcast_data
+saved_audio

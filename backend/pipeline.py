@@ -5,7 +5,6 @@ import random
 import requests
 import PyPDF2
 from bs4 import BeautifulSoup
-from langchain.prompts import PromptTemplate
 from langchain_openai import AzureChatOpenAI
 import openai
 import json
@@ -29,9 +28,24 @@ from pydub import AudioSegment
 
 # --- Configuration ---
 load_dotenv()
-AudioSegment.converter = os.getenv("FFMPEG_PATH", "/opt/homebrew/bin/ffmpeg")
-AudioSegment.ffprobe = os.getenv("FFPROBE_PATH", "/opt/homebrew/bin/ffprobe")
+# AudioSegment.converter = os.getenv("FFMPEG_PATH", "/opt/homebrew/bin/ffmpeg")
+# AudioSegment.ffprobe = os.getenv("FFPROBE_PATH", "/opt/homebrew/bin/ffprobe")
+
+# ------- New Code for pydub and ffmpeg fixation -------
+
+# Load paths from env or use sensible Linux default
+ffmpeg_path = os.getenv("FFMPEG_PATH", "/usr/bin/ffmpeg")
+ffprobe_path = os.getenv("FFPROBE_PATH", "/usr/bin/ffprobe")
+AudioSegment.converter = ffmpeg_path
+AudioSegment.ffprobe = ffprobe_path
 os.environ["PATH"] += os.pathsep + os.path.dirname(AudioSegment.converter)
+import logging
+logging.debug(f"Using ffmpeg at: {ffmpeg_path}")
+logging.debug(f"Using ffprobe at: {ffprobe_path}")
+
+
+
+
 
 # Azure Service Configurations
 OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
@@ -42,10 +56,9 @@ AZURE_SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
 AZURE_SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
 
 # Initialize Azure LLM and Speech Clients
-llm = AzureChatOpenAI(azure_deployment="gpt-4o-mini", api_version="2024-05-01-preview", temperature=0.6)
+llm = AzureChatOpenAI(azure_deployment="gpt-4o-mini", api_version="2025-01-01-preview", temperature=0.6)
 speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
 speech_config.set_speech_synthesis_output_format(speechsdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3)
-
 
 # --- Helper Functions ---
 def create_folder_if_not_exists(folder_path):

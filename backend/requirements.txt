@@ -13,3 +13,4 @@ regex
 numpy
 pandas
 streamlit
+ffmpeg

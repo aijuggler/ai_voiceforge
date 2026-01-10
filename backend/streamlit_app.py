@@ -5,7 +5,6 @@ import numpy as np
 import requests
 import PyPDF2
 from bs4 import BeautifulSoup
-from langchain.prompts import PromptTemplate
 from langchain_openai import AzureChatOpenAI
 import openai
 import json
@@ -51,7 +50,7 @@ AZURE_SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
 # Initialize Azure LLM
 llm = AzureChatOpenAI(
     azure_deployment="gpt-4o-mini",
-    api_version="2024-05-01-preview",
+    api_version="2025-01-01-preview",
     temperature=0.6,
 )
 
